@@ -1,6 +1,9 @@
 # react-learning
 learning react 
 
+## 算法
+https://www.hello-algo.com/
+
 ## 什么是 Effect，它与事件（event）有何不同？
 
 1. 如果某些逻辑必须在 每次应用加载时执行一次，而不是在 每次组件挂载时执行一次，可以添加一个顶层变量来记录它是否已经执行过了：
