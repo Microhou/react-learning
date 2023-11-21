@@ -113,3 +113,8 @@ https://www.hello-algo.com/
 
 
 > virtual-dom对象 （内存中用来描述dom阶段的对象）
+
+
+## useEffect race conditions in React 
+[Fixing Race Conditions in React with useEffect](https://maxrozen.com/race-conditions-fetching-data-react-with-useeffect)
+ - 竞争条件 例如你用id 去fetch data 再effect 中， 然后显示请求回来的结果，有时候显示正常，有时候是无效的。
