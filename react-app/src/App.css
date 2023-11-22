@@ -40,3 +40,45 @@
 .read-the-docs {
   color: #888;
 }
+.panel-light,
+.panel-dark {
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 20px;
+}
+.panel-light {
+  color: #222;
+  background: #fff;
+}
+
+.panel-dark {
+  color: #fff;
+  background: rgb(23, 32, 42);
+}
+
+.button-light,
+.button-dark {
+  border: 1px solid #777;
+  padding: 5px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+
+.button-dark {
+  background: #222;
+  color: #fff;
+}
+
+.button-light {
+  background: #fff;
+  color: #222;
+}
+
+
+ul {
+  padding-inline-start: 20px;
+}
+
+button { margin: 5px; }
+li { list-style-type: none; }
+ul, li { margin: 0; padding: 0; }

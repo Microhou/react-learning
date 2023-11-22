@@ -4,6 +4,8 @@ import Father from "./Father";
 import Child from "./Child";
 import ModalDialog from './ModalDialog';
 import DataDisplayer from './DataDisplayer';
+import MyApp from './ButtonProvider';
+import TaskApp from './TaskApp';
 import './App.css'
 
 function App() {
@@ -37,7 +39,7 @@ function App() {
           setShow(false);
         }}>Close</button>
       </ModalDialog> */}
-
+      
       <div>
         {currentId ? <p>Latest requested ID: {currentId}</p> : null}
 
@@ -47,6 +49,9 @@ function App() {
       </div>
       <hr />
       {currentId ? <DataDisplayer id={currentId} /> : null}
+
+      <MyApp/>
+      <TaskApp />
     </>
   )
 }
