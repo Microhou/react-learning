@@ -118,3 +118,169 @@ https://www.hello-algo.com/
 ## useEffect race conditions in React 
 [Fixing Race Conditions in React with useEffect](https://maxrozen.com/race-conditions-fetching-data-react-with-useeffect)
  - 竞争条件 例如你用id 去fetch data 再effect 中， 然后显示请求回来的结果，有时候显示正常，有时候是无效的。
+
+## react 源码学习
+`reactElement` 对象的数据结构是
+
+```ts
+export type ReactElement = {|
+  // 用于辨别ReactElement对象
+  $$typeof: any,
+
+  // 内部属性
+  type: any, // 表明其种类
+  key: any,
+  ref: any,
+  props: any,
+
+  // ReactFiber 记录创建本对象的Fiber节点, 还未与Fiber树关联之前, 该属性为null
+  _owner: any,
+
+  // __DEV__ dev环境下的一些额外信息, 如文件路径, 文件名, 行列信息等
+  _store: {validated: boolean, ...},
+  _self: React$Element<any>,
+  _shadowChildren: any,
+  _source: Source,
+|};
+
+```
+从  createElement 会调用 ReactElement 返回虚拟DOM
+`createElement`函数的第一个参数将作为创建`ReactElement`的`type`. 可以看到`Content`这个变量被编译器命名为`App_Content`, 并作为第一个参数(引用传递), 传入了`createElement`.
+```js
+class App_App extends react_default.a.Component {
+  render() {
+    return /*#__PURE__*/ react_default.a.createElement(
+      'div',
+      {
+        className: 'app',
+      } /*#__PURE__*/,
+      react_default.a.createElement('header', null, 'header') /*#__PURE__*/,
+
+      // 此处直接将Content传入, 是一个指针传递
+      react_default.a.createElement(App_Content, null) /*#__PURE__*/,
+      react_default.a.createElement('footer', null, 'footer'),
+    );
+  }
+}
+class App_Content extends react_default.a.Component {
+  render() {
+    return /*#__PURE__*/ react_default.a.createElement(
+      react_default.a.Fragment,
+      null /*#__PURE__*/,
+      react_default.a.createElement('p', null, '1'),
+      /*#__PURE__*/
+
+      react_default.a.createElement('p', null, '2'),
+      /*#__PURE__*/
+
+      react_default.a.createElement('p', null, '3'),
+    );
+  }
+}
+```
+```js
+function createElement(type, config, children)
+```
+```ReactElement```  创建虚拟DOM
+
+## react 
+1. 任务调度循环
+2. fiber 构造循环
+   > 大循环（任务调度循环）负责调度task, 小循环（fiber构造循环）负责实现task.
+结合上文的宏观概览图(展示核心包之间的调用关系), 可以将 react 运行的主干逻辑进行概括:
+
+1. 输入: 将每一次更新(如: 新增, 删除, 修改节点之后)视为一次`更新需求`(目的是要更新`DOM`节点).
+2. 注册调度任务: `react-reconciler`收到`更新需求`之后, 并不会立即构造`fiber树`, 而是去调度中心`scheduler`注册一个新任务`task`, 即把`更新需求`转换成一个`task`.
+3. 执行调度任务(输出): 调度中心`scheduler`通过`任务调度循环`来执行`task`(`task`的执行过程又回到了`react-reconciler`包中).
+   - `fiber构造循环`是`task`的实现环节之一, 循环完成之后会构造出最新的 fiber 树.
+   - `commitRoot`是`task`的实现环节之二, 把最新的 fiber 树最终渲染到页面上, `task`完成.
+
+主干逻辑就是`输入到输出`这一条链路, 为了更好的性能(如`批量更新`, `可中断渲染`等功能), `react`在输入到输出的链路上做了很多优化策略, 比如本文讲述的`任务调度循环`和`fiber构造循环`相互配合就可以实现`可中断渲染`.
+
+## React 应用中的高频对象
+
+### Fiber 对象
+
+先看数据结构, 其 type 类型的定义在[`ReactInternalTypes.js`](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactInternalTypes.js#L47-L174)中:
+
+```js
+// 一个Fiber对象代表一个即将渲染或者已经渲染的组件(ReactElement), 一个组件可能对应两个fiber(current和WorkInProgress)
+// 单个属性的解释在后文(在注释中无法添加超链接)
+export type Fiber = {|
+  tag: WorkTag,
+  key: null | string,
+  elementType: any,
+  type: any,
+  stateNode: any,
+  return: Fiber | null,
+  child: Fiber | null,
+  sibling: Fiber | null,
+  index: number,
+  ref:
+    | null
+    | (((handle: mixed) => void) & { _stringRef: ?string, ... })
+    | RefObject,
+  pendingProps: any, // 从`ReactElement`对象传入的 props. 用于和`fiber.memoizedProps`比较可以得出属性是否变动
+  memoizedProps: any, // 上一次生成子节点时用到的属性, 生成子节点之后保持在内存中
+  updateQueue: mixed, // 存储state更新的队列, 当前节点的state改动之后, 都会创建一个update对象添加到这个队列中.
+  memoizedState: any, // 用于输出的state, 最终渲染所使用的state
+  dependencies: Dependencies | null, // 该fiber节点所依赖的(contexts, events)等
+  mode: TypeOfMode, // 二进制位Bitfield,继承至父节点,影响本fiber节点及其子树中所有节点. 与react应用的运行模式有关(有ConcurrentMode, BlockingMode, NoMode等选项).
+
+  // Effect 副作用相关
+  flags: Flags, // 标志位
+  subtreeFlags: Flags, //替代16.x版本中的 firstEffect, nextEffect. 当设置了 enableNewReconciler=true才会启用
+  deletions: Array<Fiber> | null, // 存储将要被删除的子节点. 当设置了 enableNewReconciler=true才会启用
+
+  nextEffect: Fiber | null, // 单向链表, 指向下一个有副作用的fiber节点
+  firstEffect: Fiber | null, // 指向副作用链表中的第一个fiber节点
+  lastEffect: Fiber | null, // 指向副作用链表中的最后一个fiber节点
+
+  // 优先级相关
+  lanes: Lanes, // 本fiber节点的优先级
+  childLanes: Lanes, // 子节点的优先级
+  alternate: Fiber | null, // 指向内存中的另一个fiber, 每个被更新过fiber节点在内存中都是成对出现(current和workInProgress)
+
+  // 性能统计相关(开启enableProfilerTimer后才会统计)
+  // react-dev-tool会根据这些时间统计来评估性能
+  actualDuration?: number, // 本次更新过程, 本节点以及子树所消耗的总时间
+  actualStartTime?: number, // 标记本fiber节点开始构建的时间
+  selfBaseDuration?: number, // 用于最近一次生成本fiber节点所消耗的时间
+  treeBaseDuration?: number, // 生成子树所消耗的时间的总和
+|};
+```
+
+属性解释:
+
+- `fiber.tag`: 表示 fiber 类型, 根据`ReactElement`组件的 type 进行生成, 在 react 内部共定义了[25 种 tag](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactWorkTags.js#L10-L35).
+- `fiber.key`: 和`ReactElement`组件的 key 一致.
+- `fiber.elementType`: 一般来讲和`ReactElement`组件的 type 一致
+- `fiber.type`: 一般来讲和`fiber.elementType`一致. 一些特殊情形下, 比如在开发环境下为了兼容热更新(`HotReloading`), 会对`function, class, ForwardRef`类型的`ReactElement`做一定的处理, 这种情况会区别于`fiber.elementType`, 具体赋值关系可以查看[源文件](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiber.old.js#L571-L574).
+- `fiber.stateNode`: 与`fiber`关联的局部状态节点(比如: `HostComponent`类型指向与`fiber`节点对应的 dom 节点; 根节点`fiber.stateNode`指向的是`FiberRoot`; class 类型节点其`stateNode`指向的是 class 实例).
+- `fiber.return`: 指向父节点.
+- `fiber.child`: 指向第一个子节点.
+- `fiber.sibling`: 指向下一个兄弟节点.
+- `fiber.index`: fiber 在兄弟节点中的索引, 如果是单节点默认为 0.
+- `fiber.ref`: 指向在`ReactElement`组件上设置的 ref(`string`类型的`ref`除外, 这种类型的`ref`已经不推荐使用, `reconciler`阶段会将`string`类型的`ref`转换成一个`function`类型).
+- `fiber.pendingProps`: 输入属性, 从`ReactElement`对象传入的 props. 用于和`fiber.memoizedProps`比较可以得出属性是否变动.
+- `fiber.memoizedProps`: 上一次生成子节点时用到的属性, 生成子节点之后保持在内存中. 向下生成子节点之前叫做`pendingProps`, 生成子节点之后会把`pendingProps`赋值给`memoizedProps`用于下一次比较.`pendingProps`和`memoizedProps`比较可以得出属性是否变动.
+- `fiber.updateQueue`: 存储`update更新对象`的队列, 每一次发起更新, 都需要在该队列上创建一个`update对象`.
+- `fiber.memoizedState`: 上一次生成子节点之后保持在内存中的局部状态.
+- `fiber.dependencies`: 该 fiber 节点所依赖的(contexts, events)等, 在`context`机制章节详细说明.
+- `fiber.mode`: 二进制位 Bitfield,继承至父节点,影响本 fiber 节点及其子树中所有节点. 与 react 应用的运行模式有关(有 ConcurrentMode, BlockingMode, NoMode 等选项).
+- `fiber.flags`: 标志位, 副作用标记(在 16.x 版本中叫做`effectTag`, 相应[pr](https://github.com/facebook/react/pull/19755)), 在[`ReactFiberFlags.js`](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiberFlags.js#L10-L41)中定义了所有的标志位. `reconciler`阶段会将所有拥有`flags`标记的节点添加到副作用链表中, 等待 commit 阶段的处理.
+- `fiber.subtreeFlags`: 替代 16.x 版本中的 firstEffect, nextEffect. 默认未开启, 当设置了[enableNewReconciler=true](https://github.com/facebook/react/blob/v17.0.2/packages/shared/ReactFeatureFlags.js#L93) 才会启用, 本系列只跟踪稳定版的代码, 未来版本不会深入解读, [使用示例见源码](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactFiberCompleteWork.new.js#L690-L714).
+- `fiber.deletions`: 存储将要被删除的子节点. 默认未开启, 当设置了[enableNewReconciler=true](https://github.com/facebook/react/blob/v17.0.2/packages/shared/ReactFeatureFlags.js#L93) 才会启用, 本系列只跟踪稳定版的代码, 未来版本不会深入解读, [使用示例见源码](https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactChildFiber.new.js#L275-L287).
+- `fiber.nextEffect`: 单向链表, 指向下一个有副作用的 fiber 节点.
+- `fiber.firstEffect`: 指向副作用链表中的第一个 fiber 节点.
+- `fiber.lastEffect`: 指向副作用链表中的最后一个 fiber 节点.
+- `fiber.lanes`: 本 fiber 节点所属的优先级, 创建 fiber 的时候设置.
+- `fiber.childLanes`: 子节点所属的优先级.
+- `fiber.alternate`: 指向内存中的另一个 fiber, 每个被更新过 fiber 节点在内存中都是成对出现(current 和 workInProgress)
+
+通过以上 25 个属性的解释, 对`fiber`对象有一个初步的认识.
+
+
+
+## Build your own React 构建你自己的 React
+[构建你自己的 React]('https://pomb.us/build-your-own-react/')

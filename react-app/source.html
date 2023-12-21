@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react learning</title>
+</head>
+<body>
+    <!-- <script type="importmap">
+        {
+          "imports": {
+            "react": "https://esm.run/react",
+            "react-dom": "https://esm.run/react-dom",
+          }
+        }
+      </script> -->
+    <div id="root"></div>
+    <script type="module">
+        const element = {
+        type: "h1",
+        props: {
+            title: "foo",
+            children: "Hello",
+        },
+        };
+
+        const node = document.createElement(element.type);
+        node["title"] = element.props.title;
+
+        const text = document.createTextNode('');
+        text['nodeValue']= element.props.children;
+
+        const container = document.getElementById("root");
+        
+        node.appendChild(text);
+        container.appendChild(node);
+
+        // const element1 = (
+        // <div id="foo">
+        //     <a>bar</a>
+        //     <b />
+        // </div>
+        // )
+
+        function createElement(type, props, ...children) {
+            return {
+                type,
+                props: {
+                    ...props,
+                    children: children.map(child => typeof child === 'object' ? child : createTextElement(child)),
+                }
+            }
+        }
+
+       function createTextElement(text) {
+        return {
+            type: "TEXT_ELEMENT",
+            props: {
+                nodeValue: text,
+                children: []
+            }
+        }
+       }
+
+
+       function render(element, container) {
+        const dom = element.type === 'TEXT_ELEMENT'? document.createTextNode('') : document.createElement(element.type);
+        const isProperty = key => key !== 'children';
+        Object.keys(element.props).filter(isProperty).forEach(name => {
+            dom[name] = element.props[name];
+        })
+
+        element.props.children.forEach(child => render(child, dom))
+        container.appendChild(dom);
+       }
+       const Didact = {
+        createElement
+       }
+
+       const elementDiv = Didact.createElement(
+        'div',
+        {id: 'foo'},
+        Didact.createElement('a', null, 'bar'),
+        Didact.createElement('b')
+        )
+
+        render(elementDiv, container)
+    </script>
+</body>
+</html>
