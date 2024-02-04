@@ -284,3 +284,10 @@ export type Fiber = {|
 
 ## Build your own React 构建你自己的 React
 [构建你自己的 React]('https://pomb.us/build-your-own-react/')
+
+> fiber 查找顺序   
+> 1 先查找它的的child , 没有child 就查找sibling, 既没有child 有没有sibling，那就查找它的叔叔，如何parent 也没有sibling, 就继续向上找，直到root  然后到parent, 
+
+## typescript learning
+- TypeScript 允许开发人员定义变量的类型，可以在编译时捕获类型错误。
+- 数组类型 let arr: string[] = ['1', '2'] or let arr: Array<number> = [1, 2]
