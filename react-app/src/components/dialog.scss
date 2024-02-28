@@ -1,0 +1,39 @@
+
+.three-layout {
+    display: flex;
+    gap: 1rem;
+  
+    .left {
+      flex: 0 0 20%;
+      background: lightcyan;
+      border-right: 1px solid cyan;
+      min-height: 30rem;
+    }
+  
+    .middle {
+      flex: 0 0 50%;
+      min-height: 30rem;
+    }
+  
+    .right {
+      flex: 0 0 30%;
+      background: lightsalmon;
+      border-left: 1px solid salmon;
+      min-height: 30rem;
+    }
+  }
+  
+  
+  .avatar {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: inline-flex;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    border-radius: 50%;
+    border: 2px solid grey;
+    background: azure;
+    justify-content: center;
+    align-items: center;
+  }
+  

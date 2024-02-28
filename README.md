@@ -291,3 +291,43 @@ export type Fiber = {|
 ## typescript learning
 - TypeScript 允许开发人员定义变量的类型，可以在编译时捕获类型错误。
 - 数组类型 let arr: string[] = ['1', '2'] or let arr: Array<number> = [1, 2]
+
+
+## Elements, Children as props and re-render
+1. 如果我们把一个组件提前到sub-tree 中，那么我们提取的这个组件中的state 更新，不会影响到父组件的更新，因为react 只能向下传递值。
+2.
+```js
+  <Parent children={<Child />} />
+  // exactly the same as above
+  <Parent>
+    <Child />
+  </Parent>
+  // And will be represented as this object:
+  {
+    type: Parent,
+    props: {
+      // element for Child here
+      children: {
+        type:  Child,
+        ...
+      }
+    }
+  }
+```
+
+## Advanced configuration with render props
+1. 我们可以接收一个renderProps 函数，用函数来返回对应的组件。
+2. render props, --> 如果一个组件希望对其作为属性传递的元素拥有控制权，或者向它们传递状态，你需要将这些元素转换为渲染属性（render props）：
+```ts
+  const Button = ({ renderIcon }) => {
+  const [someState, setSomeState] = useState()
+  const someProps = { ... };
+  return <button>Submit {renderIcon(someProps, someState)}</button>;
+
+
+  <Button renderIcon={(props, state) => <IconComponent {...props}someProps={state} /> } />
+  // Children also can be render props, including "nesting" syntax.
+  const Parent = ({ children }) => {
+      return children(somedata);
+  };
+```

@@ -2,15 +2,27 @@ import { useState, useEffect } from "react";
 
 import Father from "./Father";
 import Child from "./Child";
-import ModalDialog from './ModalDialog';
+// import ModalDialog from './ModalDialog';
 import DataDisplayer from './DataDisplayer';
 import MyApp from './ButtonProvider';
 import TaskApp from './TaskApp';
+import ScrollableWithMovingBlock from './components/ScrollableWithMovingBlock';
+import { BunchOfStuff, OtherStuffAlsoComplicated } from './components/mocks';
+import { VerySlowComponent } from './components/very-slow-component';
+import ModalDialog from './components/ModalDialog';
+import Button from "./components/Button";
+import IconButtonExample from './components/IconButton';
+import ResizeDetector from './components/ResizeDetector';
 import './App.css'
+
+const SomeFormHere = () => <div> some form here</div>;
+const SubmitButton = () => <button className="button">Submit button</button>;
+const CancelButton = () => <button className="button secondary">Cancel button</button>;
 
 function App() {
 
   // const [show, setShow] = useState(false);
+  const [isOpen1, setIsOpen1] = useState(false);
 
   useEffect(() => {
     console.log('App');
@@ -52,6 +64,20 @@ function App() {
 
       <MyApp/>
       <TaskApp />
+      <ScrollableWithMovingBlock>
+      <VerySlowComponent />
+      <BunchOfStuff />
+      <OtherStuffAlsoComplicated />
+      </ScrollableWithMovingBlock>
+      <h4>Dialog with content and one button in the footer</h4>
+      <Button onClick={() => setIsOpen1(true)}>Open dialog one</Button>
+      {
+        isOpen1 && (
+          <ModalDialog footer={<SubmitButton />} onClose={() => setIsOpen1(false)}><SomeFormHere /></ModalDialog>
+        )
+      }
+      {/* <IconButtonExample /> */}
+      <ResizeDetector />
     </>
   )
 }
