@@ -331,3 +331,4 @@ export type Fiber = {|
       return children(somedata);
   };
 ```
+## Memoization with useMemo, useCallback and React.memo
