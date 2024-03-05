@@ -332,3 +332,61 @@ export type Fiber = {|
   };
 ```
 ## Memoization with useMemo, useCallback and React.memo
+1. 在react 中，为什么组件re-render 的时候，都要把组件中的声明的方法和变量重新生成一次，这个做的作用是什么了？
+ - 因为在函数组件中，一个组件本身就是一个函数，函数执行结束和重新生成的时候都会创建一个新的函数作用域。
+  ```ts
+    const Component = () => {
+    const submit = useCallback(() => {  // 我们使用useCallback 缓存了submit ,其实就是submit reference 在re-render 的时候一样了。
+    // submit something here
+    }, [])
+    useEffect(() => {
+    submit();
+    // submit is memoized, so useEffect won't be triggered on
+    every re-render
+    }, [submit]);
+    return ...
+    }
+  ```
+  2. 什么时候需要把组件的props 进行Memoize 了， 就是当这个props, 用在了另一个组件的依赖中时。
+
+  ```ts
+    const Child = ({data, onChange}) => {};
+    const ChildMemo = React.Memo(Child);
+
+    const Component = () => {
+      const data = useMemo(() => {...}, []) //some object
+      const onChange = useCallback(() => {}, []) //some object
+
+      // data and onChange now have stable reference
+      // re-renders of ChildMemo will be prevented
+
+      return <ChildMemo data={data} onChange={onChange} /> //By memoizing data and onChange , we're preserving the reference to those objects between re-renders. 
+    }
+  ```
+
+  3. Why we can't define components inside other components
+  ```ts
+    export default function App() {
+      const [text, setText] = useState('');
+
+      const ComponentWithState = () => {
+        const [isActive, setIsActive] = useState(false);
+
+        return (
+          <div className={`block ${isActive ? 'active' : ''}`}>
+            <button onClick={() => setIsActive(!isActive)}>click to highlight</button>
+          </div>
+        );
+      };
+
+      return (
+        <div>
+          <input type="text" className="input" value={text} onChange={(e) => setText(e.target.value)} />
+          <ComponentWithState />
+        </div>
+      );
+    }
+  ```
+  - 上面的代码中，如果我们设置了点击highlight button , 改变了颜色，但是当我们input 一些数据时，就会重新渲染，
+  - Declaring components inside other components like this can be one of the biggest performance killers in React.
+  - 可以给组件上面加key 来告诉react,组件已经重新渲染。
