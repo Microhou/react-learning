@@ -1,91 +1,139 @@
-import React, { Component, useEffect, useState } from 'react';
-import './global.scss';
+import React, { ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-type InputProps = {
-    onChange?: () => void;
-    placeholder: string;
-    label?: string;
-    id?: string;
+import { AnotherVerySlowComponent, VerySlowComponent } from './util/very-slow-component';
+import './styles.scss';
+
+const Context = React.createContext({
+    isNavExpanded: false,
+    toggle: () => {},
+    open: () => {},
+    close: () => {}
+})
+
+const NavigationController = ({children}: {children: ReactNode}) => {
+    const [isNavExpanded, setIsNavExpanded] = useState(false);
+
+    const toggle = useCallback(() => {setIsNavExpanded(!isNavExpanded)}, [isNavExpanded]);
+
+    const open = useCallback(() => { setIsNavExpanded(true)}, []);
+
+    const close = useCallback(() => {setIsNavExpanded(false)}, []);
+
+    const value = useMemo(() => {
+        return { isNavExpanded, toggle, close, open}
+    }, [close, isNavExpanded, open, toggle]);
+
+    return (
+        <Context.Provider value={value}>{children}</Context.Provider> // 通过value 把 toggle, open 等值 传递给context
+    )
+
 }
 
-const Input = ({onChange, placeholder, label, id}: InputProps) => {
+const useNavigation = () => useContext(Context);
+
+const AdjustableColumnsBlock = () => {
+    const { isNavExpanded } = useNavigation();
+    return isNavExpanded ? <div>two block items here</div> : <div>three block items here</div>;
+};
+const withNavigationOpen = (AnyComponent: any) => {
+    // wrap the component from the arguments in React.memo here
+    const AnyComponentMemo = React.memo(AnyComponent);
+
+    return (props: any) => {
+        const { open } = useContext(Context);
+        // return memoized component here
+        // now it won't re-render because of Context changes
+        // make sure that whatever is passed as props here don't change between re-renders!
+        return <AnyComponentMemo {...props} openNav={open} />
+    }
+}
+
+const MainPart = withNavigationOpen(({openNav}: {openNav: () => void}) => {
     useEffect(() => {
-        console.log(`Input mounted`);
-      }, []);
+        // won't be triggered when context value changes
+        // because toggleNav is coming from memoized HOC
+        console.info('Main part re-render');
+    });
 
     return (
         <>
-            <label htmlFor={id}>{label}</label>
-            <input type='text' onChange={onChange} id={id} placeholder={placeholder}/>
+            <div>
+                <button onClick={openNav}>click to expand nav - inside heavy component</button>
+            </div>
+            <VerySlowComponent />
+            <AnotherVerySlowComponent />
+            <AdjustableColumnsBlock />
         </>
+    )
+})
+
+const ExpandButton = () => {
+    const { isNavExpanded, toggle } = useNavigation();
+
+    useEffect(() => {
+        console.info('Button that uses Context re-renders');
+    });
+
+    return (
+        <button onClick={toggle}>{isNavExpanded ? 'collapse <' : 'expand >'}</button>
     )
 }
 
-const data = [
-    { id: 'business', placeholder: 'Business Tax' },
-    { id: 'person', placeholder: 'Person Tax' },
-  ];
-
-const InputMemo = React.memo(Input);
-
-const withTheme = (Component: any) => {
-    //in reality that will come from something like context
-    const isDark = true;
-    const theme = isDark ? 'dark' : 'light';
-
-    // making sure that we pass all props to the component back
-    // and also inject the new one: theme
-     return (props: any) => (<Component {...props} theme={theme}/>) 
-}
-
-const Button = ({theme}: {theme: 'dark'| 'light'}) => {
-    return <button className={`button ${theme}`}>Button</button>
-}
-
-const ButtonWithTheme = withTheme(Button);
-
-export default function App() {
-    const [order1, setOrder1] = useState(false);
-    const [order2, setOrder2] = useState(false);
-
-    const inputs1 = order1 ? [...data].reverse() : data;
-    const inputs2 = order2 ? [...data].reverse() : data;
+const SidebarLayout = ({children}: {children: ReactNode}) => {
+    const { isNavExpanded } = useNavigation();
 
     return (
-        <div className='App'>
-            <h1>"key" attribute example</h1>
-
-            <div className='container'>
-                <div className="column">
-                    <h4>Inputs with array index as keys</h4>
-                    <p>Inputs are memoized, but re-render when re-ordered</p>
-                    <label>
-                        <input type="checkbox" onChange={() => setOrder1(!order1)} />
-                        Check to re-order
-                    </label>
-                    {inputs1.map((val, index) => (
-                        <InputMemo placeholder={val.placeholder} key={index} />
-                    ))}
-                </div>
-                <div className="column">
-                    <h4>Inputs with id as key</h4>
-                    <p>Inputs are memoized and don't re-render when re-ordered</p>
-                    <label>
-                        <input type="checkbox" onChange={() => setOrder2(!order2)} />
-                        Check to re-order
-                    </label>
-
-                    {inputs2.map((val) => (
-                        <InputMemo key={val.id} placeholder={val.placeholder} />
-                    ))}
-                </div>
-            </div>
-            <h3>"Dark theme" button</h3>
-            <p>Theme is coming from HOC</p>
-            <ButtonWithTheme />
-            <h3>Or we can just pass it manually</h3>
-            <p>Light theme is set via prop</p>
-            <Button theme="light" />
+        <div className='left' style={{ flexBasis: isNavExpanded ? '50%' : '20%' }}>
+            {children}
         </div>
+    )
+}
+
+const Sidebar = () => { 
+    return (
+        <SidebarLayout>
+            {/* this one will control the expand/collapse */}
+            <ExpandButton />
+            <ul>
+                <li>
+                    <a href="#">some links</a>
+                </li>
+            </ul>
+        </SidebarLayout>
+    )
+}
+const Layout = ({children}: {children: ReactNode}) => {
+
+    const [scroll, setScroll] = useState(0);
+
+    useEffect(() => {
+        window.addEventListener('scroll', () => {
+        setScroll(window.scrollY);
+        });
+    }, []);
+
+    return (
+        <NavigationController>
+            <div className="three-layout">{children}</div>
+        </NavigationController>
+    )
+}
+
+const Page = () => {
+    return (
+        <Layout>
+            <Sidebar />
+            <MainPart />
+        </Layout>
+    )
+}
+
+export default function App() {
+    return (
+        <>
+            <h3>Very slow "Page" component - click on expand/collapse to toggle nav</h3>
+            <p>Scrolling causes re-render of everything that uses Context</p>
+            <Page />
+        </>
     )
 }

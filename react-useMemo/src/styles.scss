@@ -1,0 +1,24 @@
+.three-layout {
+    display: flex;
+    gap: 1rem;
+  
+    .left {
+      flex: 0 0 20%;
+      background: lightblue;
+      border: 1px solid rgba(blue, 0.3);
+      min-height: 30rem;
+    }
+  
+    .middle {
+      flex: 0 0 50%;
+      min-height: 30rem;
+    }
+  
+    .right {
+      flex: 0 0 30%;
+      background: lightsalmon;
+      border-left: 1px solid salmon;
+      min-height: 30rem;
+    }
+  }
+  

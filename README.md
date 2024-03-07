@@ -390,3 +390,7 @@ export type Fiber = {|
   - 上面的代码中，如果我们设置了点击highlight button , 改变了颜色，但是当我们input 一些数据时，就会重新渲染，
   - Declaring components inside other components like this can be one of the biggest performance killers in React.
   - 可以给组件上面加key 来告诉react,组件已经重新渲染。
+
+##  Higher-order components in modern world
+- 如何我们要回调一个函数，可以用另外一个函数包装一下。
+- 可以使用useMemo 包裹数据，进行缓存。
