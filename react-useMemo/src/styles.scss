@@ -22,3 +22,17 @@
     }
   }
   
+  .container {
+    display: flex;
+    gap: 2rem;
+  }
+  
+  .column {
+    background: rgba(lightgray, 0.3);
+    padding: 1rem 1rem;
+    border-radius: 10px;
+  
+    h4 {
+      margin-top: 0;
+    }
+  }
