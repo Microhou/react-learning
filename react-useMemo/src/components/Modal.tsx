@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 
 import { Button } from './Button';
 
-const Modal = ({onClose, children}: {children: ReactNode, onClose: () => void}) => {
+export const Modal = ({onClose, children}: {children: ReactNode, onClose: () => void}) => {
     return (
         <div className="modal-dialog">
           <div className="content">{children}</div>

@@ -394,3 +394,34 @@ export type Fiber = {|
 ##  Higher-order components in modern world
 - 如何我们要回调一个函数，可以用另外一个函数包装一下。
 - 可以使用useMemo 包裹数据，进行缓存。
+## Refs from storing data imperative API
+- 当组件的state 更新时，ref 中的存储的值会突然更新。
+- when can we use Ref then?
+  - is this value used for rendering components, now or in the feature.
+  - is this value passed as props to other components in any way, now or in the future.
+
+- useRef 创建的引用不是响应式的，者意味着，即使你的组件重新渲染了，useRef 所指向的值也不会自动更新。这个值会保持在最后一次设置的状态，
+  直到你显式的改变它，这种特性使得useRef非常适合用于存储那些不应该在每次渲染时都改变的值，比如动画的上下文、定时器的ID、DOM元素的引用等。
+-  我们可以将一个ref 通过props 传递给子组件。 如果我们要通过子组件，调用父组件里的set*** 方法，可以直接将 set*** 方法传递给props.
+-  this bus is full of young passengers. get off --> 下车 ， tramp --- 流浪汉 except --> 除了
+
+> React.forwardRef() 为什么要使用 forwardRef, 因为直接给子组件使用ref, react 是不知道的。
+
+## React 中的闭包（Closures in React）
+- 
+
+
+## box-sizing: content-box
+- box-sizing: 
+  - width = border + padding + 内容的宽度
+  - height = border + padding + 内容的高度
+  - symbal -- symbol 类型用于创建对象的唯一标识符.
+
+  -- 节流确保函数在
+  -- Actions (描述发生了什么)  --> Dispatch(发送到store) --> Reducer(计算新状态) --> Store(保持新状态) --> View跟新视图。
+
+## 微前端
+- 微前端 一般由 MainApp and MicroApp 组成， 
+> 这篇文章很赞
+- https://medium.com/simform-engineering/building-scalable-and-modular-web-applications-with-react-micro-frontends-and-webpack-modul-ca3c6b9b3b23
+- 
