@@ -424,4 +424,5 @@ export type Fiber = {|
 - 微前端 一般由 MainApp and MicroApp 组成， 
 > 这篇文章很赞
 - https://medium.com/simform-engineering/building-scalable-and-modular-web-applications-with-react-micro-frontends-and-webpack-modul-ca3c6b9b3b23
-- 
+## full stack github
+- https://github.com/tiangolo/full-stack-fastapi-template 
