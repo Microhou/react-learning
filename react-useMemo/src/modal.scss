@@ -1,0 +1,84 @@
+.modal {
+    position: absolute;
+    width: 300px;
+    top: 60px;
+    background: white;
+    border:1px solid rgba(grey,0.5);
+    border-radius: 10px;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,0.1);
+    min-height: 300px;
+    padding: 20px;
+  
+    &.center {
+      margin-left:-150px;
+      left: 50%;
+    }
+  
+    .content {
+      padding: 2rem 1rem;
+    }
+  
+    .footer {
+      padding: 1rem;
+      background: rgba(lightgrey, 0.2);
+      border-top:1px solid gray;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+  }
+  
+  .some {
+    background: salmon;
+    padding: 1rem 0.5rem;
+    margin: 1rem 0;
+  }
+  
+  .layout {
+    display: flex;
+  }
+  
+  .sidebar {
+    width: 8rem;
+    background: #f0f0f0;
+    padding: 2rem;
+    transition: all .3s ease-in;
+    flex-shrink: 0;
+    position: relative;
+  }
+  
+  .main {
+    padding: 2rem;
+    width: 40rem;
+    transition: all .3s ease-in;
+  }
+  
+  .header {
+    position: sticky;
+    padding: 2rem;
+    background: burlywood;
+    top: 0;
+    z-index: 2;
+  }
+  
+  .grey {
+    background: grey;
+    padding: 0.5rem;
+    width: 10rem;
+  }
+  
+  .red {
+    background: salmon;
+    padding: 0.5rem;
+    width: 10rem;
+    margin-top: -2rem;
+    margin-left: 2rem;
+  }
+  
+  .green {
+    background: lightseagreen;
+    padding: 0.5rem;
+    width: 10rem;
+    margin-top: -2rem;
+    margin-left: 4rem;
+  }
+  
