@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promise all</title>
+</head>
+<body>
+    <script>
+        // let names = ['iliakan', 'remy', 'jeresig'];
+        // let requests = names.map(name => fetch(`https://api.github.com/users/${name}`));
+
+        // Promise.all(requests)
+        //     .then(responses => {
+        //         for (let response of responses) {
+        //             alert(`${response.url}: ${response.status}`)
+        //         }
+        //         return responses;
+        //     })
+        //     .then(responses => Promise.all(responses.map(r => r.json())))
+        //     .then(users => users.forEach(user => alert(user.name)))
+
+        let promise = Promise.reject(new Error("Promise Failed!"));
+        // promise.catch(error => alert("caught"));
+        setTimeout(() => promise.catch(err => alert('caught')), 1000);
+
+        // 不会运行：error 已经被处理
+        window.addEventListener('unhandledrejection', event => alert(event.reason));
+    </script>
+</body>
+</html>

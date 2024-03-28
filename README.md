@@ -425,4 +425,15 @@ export type Fiber = {|
 > 这篇文章很赞
 - https://medium.com/simform-engineering/building-scalable-and-modular-web-applications-with-react-micro-frontends-and-webpack-modul-ca3c6b9b3b23
 ## full stack github
-- https://github.com/tiangolo/full-stack-fastapi-template 
+- https://github.com/tiangolo/full-stack-fastapi-template
+
+## Promise 
+- Promise 中的executor 只能调用一个resolve or reject, 也就是说 再executor 中，如果有多个 resolve, and reject, 只会执行第一个。
+```js
+  let promise = new Promise(function(resolve, reject) {
+    resolve("done");
+
+    reject(new Error("…")); // 被忽略
+    setTimeout(() => resolve("…")); // 被忽略
+  });
+```
