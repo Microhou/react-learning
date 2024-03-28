@@ -24,15 +24,22 @@
   
   .container {
     display: flex;
-    gap: 2rem;
+    align-items: flex-start;
   }
   
   .column {
-    background: rgba(lightgray, 0.3);
-    padding: 1rem 1rem;
-    border-radius: 10px;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0 2rem 0 1rem;
+    list-style-type: none;
   
-    h4 {
-      margin-top: 0;
+    li {
+      margin: 1rem 0;
+  
+      button {
+        padding: 1rem 4rem;
+        cursor: pointer;
+      }
     }
   }

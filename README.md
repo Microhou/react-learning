@@ -437,3 +437,11 @@ export type Fiber = {|
     setTimeout(() => resolve("…")); // 被忽略
   });
 ```
+## Promise all
+- 请求瀑布 ![alt text](image-1.png)
+
+## React 中通用错误处理
+- 在 useEffect 的内部使用 try/catch
+- try/catch won't able to catch anything that happens inside children component.
+- React ErrorBoundary 
+- 我们可以在onClick 中 try/catch 

@@ -1,88 +1,77 @@
-import React, { useState, useEffect } from "react";
-
+import { useState, useEffect } from 'react';
 import './styles.scss';
-import { mojodnaUrl, defunktUrl, OptionalGithubUser, useData } from './components/data';
 
-const LoadingSidebar = () => (
-    <>
-      <div className="sidebar-base">
-        <div className="loading sidebar-loading" />
-        <div className="loading sidebar-loading" />
-        <div className="loading sidebar-loading" />
-        <div className="loading sidebar-loading" />
-      </div>
-    </>
-  );
-  
-  const LoadingIssue = () => (
-    <>
-      <div className="issue">
-        <div className="loading issue-loading" style={{ height: '20rem' }} />
-        <div className="loading issue-loading" />
-      </div>
-    </>
-  );
+type Issue = {
+    id: string;
+    title: string;
+    description: string;
+    author: string;
+}
 
-  const LoadingScreen = () => {
-    return (
-      <div className="layout">
-        <LoadingSidebar />
-        <LoadingIssue />
-      </div>
-    );
-  };
+const url1 = 'https://api-sage-two-60.vercel.app/mocks/issues/1?delay=2000';
+const url2 = 'https://api-sage-two-60.vercel.app/mocks/issues/2?delay=1000';
 
-  const Sidebar = ({ data }: {data: OptionalGithubUser}) => {
-    return (
-        <div className="sidebar sidebar-base">
-            <p>{data.name}</p>
-            <p>{data.company}</p>
-        </div>
-    )
-  }
-  const Issue = ({ data }: {data: OptionalGithubUser}) => {
-    return (
-        <div className="issue">
-            <p>{data.name}</p>
-            <p>{data.company}</p>
-        </div>
-    )
-  }
+const Page = ({id}: {id: string}) => {
+    const [ data, setData] = useState<Issue>({} as Issue);
+    const [loading, setLoading] = useState(false);
 
-  const useAllData = () => {
-    const [sidebar, setSidebar] = useState<OptionalGithubUser>();
-    const [issue, setIssue] = useState<OptionalGithubUser>();
+    const url = id ==='1' ? url1 : url2;
 
     useEffect(() => {
-        const dataFetch = async () => {
-            const result = (await Promise.all([fetch(mojodnaUrl), fetch(defunktUrl)])).map((r) => r.json());
-            console.log("res-->", result);
-            
+        const controller = new AbortController();
 
-            const [sidebarResult, issueResult] = await Promise.all(result);
+        setLoading(true);
+        fetch(url, { signal: controller.signal })
+        // fetch(url)
+            .then((r) => r.json())
+            .then((r) => {
+                setData(r);
+                console.log(r);
+                setLoading(false)
+            })
+            .catch((e) => {
+                console.log(e.name);
+            })
 
-            setSidebar(sidebarResult);
-            setIssue(issueResult);
+            return () => {
+                controller.abort();
+            }
+    }, [url])
 
-        }
-        dataFetch();
-    }, [])
-
-    return { sidebar, issue };
-  }
-
-  const App = () => {
-    const { sidebar, issue } = useAllData();
-
-    if (!sidebar || !issue ) return <LoadingScreen />;
+    if(!data.id || loading) return <>loading issue {id}</>;
 
     return (
-        <div className="layout">
-            <Sidebar data={sidebar} />
-            <Issue data={issue} />
+        <div>
+            <h1>My issue number {data.id}</h1>
+            <h2>{data.title}</h2>
+            <p>{data.description}</p>
         </div>
     )
-  }
+}
 
-  export default App;
+const App = () => {
+    const [page, setPage] = useState('1');
 
+    return (
+        <div className="App">
+          <div className="container">
+            <ul className="column">
+              <li>
+                <button className="button" onClick={() => setPage('1')} disabled={page === '1'}>
+                  Issue 1
+                </button>
+              </li>
+              <li>
+                <button className="button" onClick={() => setPage('2')} disabled={page === '2'}>
+                  Issue 2
+                </button>
+              </li>
+            </ul>
+    
+            <Page id={page} />
+          </div>
+        </div>
+      );
+}
+
+export default App;
