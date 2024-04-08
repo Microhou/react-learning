@@ -445,3 +445,13 @@ export type Fiber = {|
 - try/catch won't able to catch anything that happens inside children component.
 - React ErrorBoundary 
 - 我们可以在onClick 中 try/catch 
+
+## intro to Re-render
+- hooks 会隐藏state update, 但是实际上你使用hook 在组件中，还是会引起全局渲染的，所以最好的方式还是，把state 封装到一个component 中。
+- 我们可以使用"moving state down" 的模式，防止大应用的的重新渲染。
+
+## elements as props
+- always remember: "children" in this context are nothing more than a prop, and the "nested" syntax is just syntax for it!
+- 当我们要渲染一个条件component 时， 如果这个component 的props 接受一个组件，我们不用关心props 接受的组件是否创建，影响性能，其实时不会的
+  因为react 只有渲染的时候才会处理props 接收的组件
+- 理解 React.cloneElement(icon, newProps)

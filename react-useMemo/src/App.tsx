@@ -1,77 +1,52 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
+import { VerySlowComponent } from './components/VerySlow';
 import './styles.scss';
 
-type Issue = {
-    id: string;
-    title: string;
-    description: string;
-    author: string;
-}
 
-const url1 = 'https://api-sage-two-60.vercel.app/mocks/issues/1?delay=2000';
-const url2 = 'https://api-sage-two-60.vercel.app/mocks/issues/2?delay=1000';
 
-const Page = ({id}: {id: string}) => {
-    const [ data, setData] = useState<Issue>({} as Issue);
-    const [loading, setLoading] = useState(false);
+export const BunchOfStuff = () => <div className="bunch-of-stuff">Bunch of stuff</div>;
+export const OtherStuffAlsoComplicated = () => <div>Other stuff</div>;
 
-    const url = id ==='1' ? url1 : url2;
-
-    useEffect(() => {
-        const controller = new AbortController();
-
-        setLoading(true);
-        fetch(url, { signal: controller.signal })
-        // fetch(url)
-            .then((r) => r.json())
-            .then((r) => {
-                setData(r);
-                console.log(r);
-                setLoading(false)
-            })
-            .catch((e) => {
-                console.log(e.name);
-            })
-
-            return () => {
-                controller.abort();
-            }
-    }, [url])
-
-    if(!data.id || loading) return <>loading issue {id}</>;
+const MovingBlock = ({position}: {position: number}) => {
 
     return (
-        <div>
-            <h1>My issue number {data.id}</h1>
-            <h2>{data.title}</h2>
-            <p>{data.description}</p>
+        <div className="movable-block" style={{ top: position }}>
+            {position}
+        </div>
+    )
+}
+// just hard-coded approximation to demonstrate the re-renders problem
+// not to be used in real code
+
+const getPosition = (val: number) => 150 - val / 2;
+
+const ScrollableWithMovingBlock = ({children}: {children: ReactNode}) => { // 如果我们将slow components 依据children 的方式，传递，当 position 更新时， React 会比较 before 
+    // and after 的组件 是否有变化，如果有，就重新渲染，如果没有就不重新渲染，所以在这个例子中， Type: Children 前后是一样的，所以不用重新渲染。
+    const [position, setPosition] = useState(150);
+
+    const onScroll = (e: any) => {
+        const calculated = getPosition(e.target.scrollTop);
+
+        setPosition(calculated);
+    }
+
+    return (
+        <div className="scrollable-block" onScroll={onScroll}>
+            <MovingBlock position={position} />
+            {/* put our content prop here, where the slow bunch of stuff used to be */}
+            {children}
         </div>
     )
 }
 
-const App = () => {
-    const [page, setPage] = useState('1');
-
-    return (
-        <div className="App">
-          <div className="container">
-            <ul className="column">
-              <li>
-                <button className="button" onClick={() => setPage('1')} disabled={page === '1'}>
-                  Issue 1
-                </button>
-              </li>
-              <li>
-                <button className="button" onClick={() => setPage('2')} disabled={page === '2'}>
-                  Issue 2
-                </button>
-              </li>
-            </ul>
-    
-            <Page id={page} />
-          </div>
-        </div>
+export default function App() {
+    const slowComponents = (
+        <>
+          <VerySlowComponent />
+          <BunchOfStuff />
+          <OtherStuffAlsoComplicated />
+        </>
       );
-}
 
-export default App;
+    return <ScrollableWithMovingBlock children={slowComponents} />;
+}
