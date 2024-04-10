@@ -4,6 +4,12 @@ learning react
 ## 算法
 https://www.hello-algo.com/
 
+## Java
+[To Be Better Javaer]('https://github.com/itwanger/toBeBetterJavaer')
+
+## 炭炭GPT
+[炭炭GPT]('https://mytan.maiseed.com.cn/chat/6615ea23aa94a700d7ab3a4a')
+
 ## 什么是 Effect，它与事件（event）有何不同？
 
 1. 如果某些逻辑必须在 每次应用加载时执行一次，而不是在 每次组件挂载时执行一次，可以添加一个顶层变量来记录它是否已经执行过了：
