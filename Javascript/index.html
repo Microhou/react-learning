@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copy to Clipboard Example</title>
+    <!-- 引入Prism.js库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/themes/prism.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.25.0/prism.min.js"></script>
+</head>
+<body>
+    <button id="copyBtn">复制代码</button>
+    <pre id="codeToCopy">
+        <code>
+            console.log("Hello, World!");
+            function example() {
+              // Your code here
+            }
+        </code>
+    </pre>
+    <textarea id="codeDisplay" rows="10" cols="50"></textarea>
+    <script>
+        const button = document.getElementById('copyBtn');
+        const code = document.getElementById("codeToCopy");
+        const displayArea = document.getElementById('codeDisplay');
+
+        button.addEventListener('click', function () {
+            const tempInput = document.createElement('input');
+            tempInput.value = code.textContent;
+            document.body.appendChild(tempInput);
+
+            tempInput.select();
+            document.execCommand('copy');
+
+            document.body.removeChild(tempInput);
+            // 将复制的代码粘贴到textarea中
+            displayArea.value = code.textContent;
+    
+            // 使用Prism.js对textarea中的代码进行语法高亮
+            Prism.highlightAllUnder(displayArea);
+
+            alert("代码已复制到剪贴板");
+        })
+    </script>
+</body>
+</html>
