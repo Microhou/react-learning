@@ -137,5 +137,117 @@ alert( Number(false) );       // 0
  ### ！
  - 两个非运算 !! 有时候用来将某个值转化为布尔类型：
 
+ ### 空值合并运算符 '??'
+>  a ?? b 的结果是：
+ - 如果 a 不是 null/undefined 则 ?? 返回第一个参数，否则返回第二个参数。
+ - a ?? b ==> (a !== null && a !== undefined) ? a : b
+ - 常见的场景是 提供默认值
+```js
+let firstName = null;
+let lastName = null;
+let nickName = "Supercoder";
 
+// 显示第一个已定义的值：
+alert(firstName ?? lastName ?? nickName ?? "匿名"); // Supercoder
+```
 
+## 循环： while 和 for
+- 循环 是一种重复运行同一代码的方法。
+> while 循环
+```js
+    while(condition){
+
+    }
+```
+- 循环体的单次执行叫做 **一次迭代**
+- 任何表达式和变量都可以是循环条件。
+> do...while 循环
+```js
+    do {
+        // 循环体
+    } while (condition)
+```
+- do while 就是无论如何，都会执行一次循环体
+
+> for 循环
+```js
+    for(begin, condition, step){
+        // ……循环体……
+    }
+```
+- 也就是说 begin 执行一次，然后进行迭代：每次检查condition 后，执行body 和 step.
+
+> 跳出循环
+- break 会终止循环
+- continue,不会停掉整个循环，而是停止当前这一次迭代，并强制启动新一轮循环（如果条件允许的话）。
+```js
+    for(let i = 0; i< 10; i++){
+        if(i % 2 == 0) continue;
+        console.log(i) // 1，然后 3，5，7，9
+    }
+```
+- 禁止 break/continue 在 ‘?’ 的右边
+`(i > 5) ? alert(i) : continue; // continue 不允许在这个位置`
+  
+- 直接使用标签，跳出多层循环
+```js
+    outer: for (let i = 0; i < 3; i++) {
+
+                for (let j = 0; j < 3; j++) {
+
+                    let input = prompt(`Value at coords (${i},${j})`, '');
+
+                    // 如果是空字符串或被取消，则中断并跳出这两个循环。
+                    if (!input) break outer; // (*)
+
+                    // 用得到的值做些事……
+                }
+            }
+
+        alert('Done!');
+``` 
+## "switch" 语句
+> switch 语句至少有一个case 代码和一个可选的default 代码块
+- 会比较 x 的值和第一个case 是否严格相等，然后比较第二个case, 以此类推。
+- 每一个case 后面，最好要有一个break.
+- 如果没有符合的case 则执行default 代码块。
+- 任何表达式都可以成为switch/case 的参数.
+### case 分组
+- 共享同一段代码的几个case 分支可以被分为一组。
+
+## 函数
+- 在函数体声明的变量，只有在函数中可见
+- parameter and argument 的概念
+    - 参数（parameter）时函数声明中括号内列出的变量（它是函数声明时的术语）。
+    - 参数（argument）是调用函数时传递给函数的值（它是函数调用时的术语）。
+- 默认值
+    - 我们可以使用 = 提供默认值
+- 返回值
+    - 如何一个函数 没有return 值，或者直接return, 都返回undefined
+- 函数 == 注释
+```js
+    function showPrimes(n){
+        for(let i = 2; i < n; i++){
+            if(!isPrime(i)) continue;
+
+            alert(i);
+        }
+    }
+
+    function isPrime(n) {
+        for(let i = 2; i < n; i++){
+            if(n % i == 0) return false;
+        }
+
+        return true; 
+    }
+```
+
+## 函数表达式
+-  再JavaScript中 函数是一个值，
+- 函数声明的方式，JavaScript 在准备运行脚本时，首先会在脚本中寻找函数声明，并创建这些函数。
+- 函数表达式只在代码执行到它时才会被创建。
+## 箭头函数
+- JavaScript info 这个文档，会帮我对JavaScript 基础知识的加深和一些知识盲点的澄清，但是也要对它有怀疑的精神。
+## JavaScript 特性
+- 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+        }
+        .canvas-container {
+            display: none;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <input type="file" name="" id="imageFile" accept="image/*"/>
+    </div>
+    <div class="canvas-container">
+        <canvas id="can"></canvas>
+    </div>
+    <script>
+        const oContainer = document.querySelector('.canvas-container');
+        const oImageFile = document.getElementById("imageFile");
+        const oCan = document.getElementById('can');
+        const ctx = oCan.getContext("2d");
+        let initPos = [];
+
+        const oImage = new Image();
+        const init = () => {
+            bindEvent();
+        }
+
+        function bindEvent(){
+            oImageFile.addEventListener('change', handleFileChange, false);
+            oCan.addEventListener('mousedown', handleCanvasMouseDown, false);
+        }
+
+        function handleCanvasMouseDown(e) {
+            initPos = [e.offsetX, e.offsetY];
+            oCan.addEventListener('mousemove', handleCanvasMouseMove, false);
+            oCan.addEventListener('mouseup', handleCanvasMouseUp, false);
+        }
+
+        function handleCanvasMouseMove(e) {
+            const endX = e.offsetX;
+            const endY = e.offsetY;
+            const [startX, startY] = initPos;
+            const rectWidth = endX - startX;
+            const rectH
+        }
+
+        function handleCanvasMouseUp(e) {
+            oCan.removeEventListener('mousemove', handleCanvasMouseMove, false);
+            oCan.removeEventListener('mouseup', handleCanvasMouseUp, false);
+        }
+
+        function handleFileChange(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                console.log(e.target.result)
+                const data = e.target.result;
+                oImage.src = data;
+                oImage.onload = function() {
+                    console.log(this.width, this.height)
+                    const { width, height } = this;
+                    generateCanvas(oContainer, oCan, width, height);
+                    ctx.drawImage(oImage, 0, 0, width, height);
+                    drawImageMask(0, 0, width, height, .5);
+                }
+            }
+        }
+
+        function generateCanvas(container, canvas, width, height) {
+            container.style.width = width + "px";
+            container.style.height = height + "px";
+            canvas.width = width;
+            can.height = height;
+            container.style.display = 'block';
+
+        }
+
+        function drawImageMask(x, y, width, height, opacity) {
+            ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+            ctx.fillRect(0, 0, width, height);
+        }
+        init();
+    </script>
+</body>
+</html>
