@@ -321,5 +321,65 @@ alert(firstName ?? lastName ?? nickName ?? "匿名"); // Supercoder
     - 树形结构化 -- 扁平化
     - 二分法 -
     - 一天不要稀里糊涂的，把上面的知识清楚，MDN 上面的教程
-    - 
-   
+
+## 30 days of javaScript
+- 使用键盘快捷键打开Chrome控制台  --> Windows/Linux: Ctl+Shift+J
+- Open the console --> Windows: Ctl+Shift+I
+- inline Script 
+```html
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>30DaysOfScript:Inline Script</title>
+    </head>
+    <body>
+        <button onclick="alert('Welcome to 30DaysOfJavaScript!')">Click Me</button>
+    </body>
+    </html>
+```
+### day 2
+- primitive data types
+- Object Reference
+- 两个具有相同内容的对象，如果用 == 比较，返回false
+- `Math.min(-5, 3, 20, 4, 5, 10)` //  -5, returns the minimum value
+- `Math.max(-5, 3, 20, 4, 5, 10)` // 20， returns the maximum value ，也就是说 Math.max and Math.min 都可以接收多参数。
+- `Math.random()` --> creates random number between 0 to 0.999999
+- `Math.floor(Math.random() * 11)` create random number between 0 to 10 
+- 连接字符串的方法： 
+    - 使用加号 + 
+    - 模板字符串 `${expression}`
+- 长字符串 可以再末尾加上 backslash character (\)
+> 字符串中一些常用的方法
+- 可以使用 index 来访问字符串中字符--》 let string = 'JavaScript' let first = string[0] // J 
+- string.length 活动字符串长度
+- toUpperCase() -- 将字符串改为大写
+- toLowerCase() -- 将字符串改为小写
+- substr() --  console.log(string.substr(4,6)) 4-- 是starting index, 6 是要截取的字符数   // Script 
+- subString -- It takes two arguments, the starting index and the stopping index but it doesn't include the character at the stopping index.
+    - let string = 'JavaScript'  console.log(string.substring(0,4))     // Java  console.log(string.substring(4,10))    // Script
+- splice() --> The split method splits a string at a specified place.  
+- trim() --> Removes trailing space in the beginning or the end of a string.
+- includes() --> It takes a substring argument and it checks if substring argument exists in the string. includes() returns a boolean. If a substring exist in a string, it returns true, otherwise it returns false.
+- replace() --> takes as a parameter the old substring and a new substring.  --> string.replace(oldsubstring, newsubstring)\
+- charAt() --> Takes index and it returns the value at that index  -> let string = '30 Days Of JavaScript' console.log(string.charAt(0))        // 3
+- charCodeAt() --> Takes index and it returns char code (ASCII number) of the value at that index
+- indexOf() -- Takes a substring and if the substring exists in a string it returns the first position of the substring if does not exist it returns -1
+- lastIndexOf() -- Takes a substring and if the substring exists in a string it returns the last position of the substring if it does not exist it returns -1
+- concat(): it takes many substrings and joins them.  -》 string.concat(substring, substring, substring)
+- startsWith: it takes a substring as an argument and it checks if the string starts with that specified substring. It returns a boolean(true or false).
+- endsWith: it takes a substring as an argument and it checks if the string ends with that specified substring. It returns a boolean(true or false).
+- search: it takes a substring as an argument and it returns the index of the first match. The search value can be a string or a regular expression pattern.
+- match: it takes a substring or regular expression pattern as an argument and it returns an array if there is match if not it returns null. Let us see how a regular expression pattern looks like. It starts with / sign and ends with / sign.
+- repeat(): it takes a number as argument and it returns the repeated version of the string.
+> 检查数据类型转换
+- string to int 
+    - parseInt()
+    - Number()
+    - Plus sign(+)
+- string to Float
+    - parseFloat()
+    - Number()
+    - Plus sign(+) 
+- Float to Int  
+    - parseInt()  let num = 9.81  let numInt = parseInt(num)  console.log(numInt) // 9
+     
